@@ -1,4 +1,4 @@
-Simple VK sender behalf community group. Easy to configure, easy to use.  
+Simple message sender to vk.com (social network). Easy to configure, easy to use.  
 Plugin provides Hooks to send messages and log it. Can be quickly used by any another plugins.
 
 ## Configuration
