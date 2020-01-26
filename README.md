@@ -10,9 +10,7 @@ Plugin provides Hooks to send messages and log it. Can be quickly used by any an
 }
 ```
 ### Community configuration
-To get **community token** you should be Administrator or have access to manage group.
-<details><summary>Show details</summary><p>
-
+To get **community token** you should be Administrator or have access to manage group.  
 Open community page and click **Manage** menu item  
 ![](https://i.imgur.com/hjRmPSM.png)  
 
@@ -21,16 +19,13 @@ Then choose **API usage** and click **Create token** button
 
 In the dialog **allow access to community messages** and click **Create**. Go through instructions and copy generated token.  
 ![](https://i.imgur.com/0jhosde.png)
-</p></details>
 
 ### VK user configuration
 To avoid spam, by default VK blocked all messages from community to user.  
 User should **allow messages** from community.
-<details><summary>Show details</summary><p>
 
 To allow messages, user need to open your community page and click **Allow messages**  
 ![](https://i.imgur.com/5zQY2BW.png)
-</p></details>
 
 ## Plugin Hooks
 ### OnVkMessageSent
