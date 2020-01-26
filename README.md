@@ -13,13 +13,13 @@ Plugin provides Hooks to send messages and log it. Can be quickly used by any an
 To get **community token** you should be Administrator or have access to manage group.
 <details><summary>Show details</summary><p>
 
-Open community page where you're Administrator, and click **Manage** menu item  
+Open community page and click **Manage** menu item  
 ![](https://i.imgur.com/hjRmPSM.png)  
 
 Then choose **API usage** and click **Create token** button  
 ![](https://i.imgur.com/NmEcuWu.png)  
 
-In creation dialog **allow access to community messages** and click **Create**  
+In the dialog **allow access to community messages** and click **Create**. Go through instructions and copy generated token.  
 ![](https://i.imgur.com/0jhosde.png)
 </p></details>
 
@@ -28,7 +28,7 @@ To avoid spam, by default VK blocked all messages from community to user.
 User should **allow messages** from community.
 <details><summary>Show details</summary><p>
 
-To allow messages, user need to open community page and click **Allow messages**  
+To allow messages, user need to open your community page and click **Allow messages**  
 ![](https://i.imgur.com/5zQY2BW.png)
 </p></details>
 
@@ -75,7 +75,7 @@ If you don't like these messages, you can turn of them in plugin configuration. 
 [VkComponent] vkUserId: 4307666; Error '901': Can't send messages for users without permission
 ```
 
-### OnVkConnected(byte code, ...)
+### OnVkError(byte code, ...)
 Code values: 
 1. Network problems
 2. Token wasn't specified
@@ -83,7 +83,7 @@ Code values:
 4. User doesn't allow messages
 
 ## Examples
-Example [plugin on git]() with console command to test message sending to user with Id **000000**
+Example [plugin on git](https://github.com/rust-plugins/VkApi/blob/master/Examples/VkApiExample.cs) with console command "**vk**" to test messages.
 ```
 > vk 000000 "Hello, Universe!"
 [VK API Example] Sending test message to 000000
