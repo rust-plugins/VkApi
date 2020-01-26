@@ -1,8 +1,8 @@
+using System;
 using Oxide.Core.Plugins;
 using UnityEngine;
 using Newtonsoft.Json.Linq;
 using Oxide.Core;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,25 +20,57 @@ namespace Oxide.Plugins
 
         private void Init()
         {
+            LogToFile("Initialization...");
+
             _config = Config.ReadObject<PluginConfig>();
             if (string.IsNullOrEmpty(_config.Token))
             {
-                PrintWarning("Community token required");
+                var message = "Community token required";
+                PrintWarning(message);
+                LogToFile(message);
                 return;
             }
 
-            _vk = VkComponent.Create(_config.Token);
+            _vk = VkComponent.Create(_config.Token, _config.MuteMessageDisallowed);
         }
 
         [HookMethod("SendText")]
         public void SendText(string vkUserId, string message)
         {
+            LogToFile($"Sending message to {vkUserId}: {message}");
             _vk.SendTextMessage(vkUserId, message);
         }
 
-        private void Unload() => GameObject.Destroy(_vk);
-        private void OnVkConnected() => Puts("VK Api connected!");
-        protected override void LoadDefaultConfig() => Config.WriteObject(new PluginConfig(), true);
+        private void Unload()
+        {
+            LogToFile("Unloaded");
+            GameObject.Destroy(_vk);
+        }
+
+        private void OnVkConnected()
+        {
+            var message = "VK Api connected!";
+            LogToFile(message);
+            Puts(message);
+        }
+
+        protected override void LoadDefaultConfig() 
+            => Config.WriteObject(new PluginConfig(), true);
+
+        private void LogToFile(string message)
+        {
+            if (_config?.LogToFile != true) return;
+            
+            var timestamp = DateTime.Now.ToString("HH:mm:ss");
+            message = $"{timestamp} | {message}";
+            LogToFile("common", message, this);
+        }
+
+        private void OnVkMessageSent(string vkUserId, string message)
+            => LogToFile($"Message to user {vkUserId} sent: {message}");
+
+        private void OnVkError(byte code, string description, int vkApiCode, string vkUserId)
+            => LogToFile($"Error: {code}; Description: {description}; VK API code: {vkApiCode}; VK User id: {vkUserId}");
     
         #region Shared.Components
 
@@ -51,16 +83,19 @@ namespace Oxide.Plugins
             private readonly Queue<BaseRequest> _queue = new Queue<BaseRequest>();
             private string _communityToken;
             private bool _busy = false;
+            private static bool _muteMessagesNotAllowed;
     
             private enum Errors : byte
             {
                 Network = 1,
-                WebhookEmpty = 2,
-                Api = 3
+                TokenEmpty = 2,
+                Api = 3,
+                Disallowed = 4
             }
     
-            public static VkComponent Create(string communityToken)
+            public static VkComponent Create(string communityToken, bool muteMessagesNotAllowed)
             {
+                _muteMessagesNotAllowed = muteMessagesNotAllowed;
                 return new GameObject()
                     .AddComponent<VkComponent>()
                     .Configure(communityToken)
@@ -144,8 +179,8 @@ namespace Oxide.Plugins
             {
                 if (string.IsNullOrEmpty(_communityToken))
                 {
-                    print("[ERROR] Discord webhook URL wasn't specified");
-                    Interface.CallHook("OnVkError", (byte)Errors.WebhookEmpty, "Network or HTTP error");
+                    Debug.LogError($"[{GetType().Name}] token wasn't specified");
+                    Interface.CallHook("OnVkError", (byte)Errors.TokenEmpty, "Token wasn't specified");
                     yield break;
                 }
     
@@ -185,8 +220,18 @@ namespace Oxide.Plugins
                         ?["value"] as JValue)
                     ?.Value;
     
-                Debug.LogError($"[{GetType().Name}] vkUserId: {eUserId ?? "-"}; Error '{eCode}': {eMessage}");
-                Interface.CallHook("OnVkError", (byte)Errors.Api, eMessage, eCode);
+                var message = $"[{GetType().Name}] vkUserId: {eUserId ?? "-"}; Error '{eCode}': {eMessage}";
+                if (eCode == 901) // user doesn't allow messages from community
+                {
+                    if (!_muteMessagesNotAllowed) Debug.LogWarning(message);
+                    Interface.CallHook("OnVkError", (byte)Errors.Disallowed, eMessage, eCode, eUserId);
+                }
+                else
+                {
+                    Debug.LogError(message);
+                    Interface.CallHook("OnVkError", (byte)Errors.Api, eMessage, eCode);
+                }
+    
                 return true;
             }
     
@@ -257,6 +302,12 @@ namespace Oxide.Plugins
         {
             [JsonProperty("VK community token")]
             public string Token { get; set; }
+    
+            [JsonProperty("Don't show warnings when messages not allowed")]
+            public bool MuteMessageDisallowed { get; set; }
+    
+            [JsonProperty("Log events to file")]
+            public bool LogToFile { get; set; } = true;
         }
     
         #endregion

@@ -1,3 +1,5 @@
 {
-  "VK community token": "bqubp4q9873b4p9q3bpv498bqkj4bq93u4bpf9q34fbpq384bf3q94fbqp94bfqp934ubfkdhvkjav2386fvq"
+  "VK community token": "bqubp4q9873b4p9q3bpv498bqkj4bq93u4bpf9q34fbpq384bf3q94fbqp94bfqp934ubfkdhvkjav2386fvq",
+  "Don't show warnings when messages not allowed": false,
+  "Log events to file": true
 }

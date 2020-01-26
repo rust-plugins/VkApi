@@ -3,7 +3,7 @@ using Oxide.Core.Plugins;
 
 namespace Oxide.Plugins
 {
-    [Info("VK API Example", "NickRimmer", "1.0")]
+    [Info("VK API Example", "NickRimmer", "1.0.0")]
     [Description("Example plugin")]
     public class VkApiExample : CovalencePlugin
     {
@@ -30,7 +30,7 @@ namespace Oxide.Plugins
             var vkUserId = args[0];
             var message = args[1];
 
-            Puts($"Send test message to {vkUserId}");
+            Puts($"Sending test message to {vkUserId}");
             VkApi.Call("SendText", vkUserId, message);
         }
 
@@ -39,14 +39,14 @@ namespace Oxide.Plugins
             Puts($"Message '{message}' was sent to VK User: {vkUserId}");
         }
 
-        private void OnVkError(byte code, string description, int vkApiCode)
+        private void OnVkError(byte code, string description, int vkApiCode, string vkUserId)
         {
-            if (code == 3) Puts($"Api error code: {vkApiCode}; Description: '{description}'");
+            Puts($"{code}: Api error code: {vkApiCode}; Description: '{description}'; VK User: {vkUserId}");
         }
 
         private void OnVkError(byte code, string description)
         {
-            if (code != 3) Puts($"Something going wrong: '{description}'");
+            Puts($"Something going wrong: '{description}'");
         }
     }
 }
