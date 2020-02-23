@@ -1,7 +1,7 @@
-Simple message sender to vk.com (social network). Easy to configure, easy to use.  
-Plugin provides Hooks to send messages and log it. Can be quickly used by any another plugins.
+Simple message sender to vk.com (social network). Easy to configure, easy to use.  The plugin provides hooks to to be used in other plugins for sending and logging messages.
 
 ## Configuration
+
 ```json
 {
   "Don't show warnings when messages not allowed": false,
@@ -9,7 +9,9 @@ Plugin provides Hooks to send messages and log it. Can be quickly used by any an
   "VK community token": "put_your_community_token_here"
 }
 ```
+
 ### Community configuration
+
 To get **community token** you should be Administrator or have access to manage group.  
 Open community page and click **Manage** menu item  
 ![](https://i.imgur.com/hjRmPSM.png)  
@@ -21,6 +23,7 @@ In the dialog **allow access to community messages** and click **Create**. Go th
 ![](https://i.imgur.com/0jhosde.png)
 
 ### VK user configuration
+
 To avoid spam, by default VK blocked all messages from community to user.  
 User should **allow messages** from community.
 
@@ -28,8 +31,10 @@ To allow messages, user need to open your community page and click **Allow messa
 ![](https://i.imgur.com/5zQY2BW.png)
 
 ## Plugin Hooks
+
 ### OnVkMessageSent
-```c#
+
+```csharp
 private void OnVkMessageSent(string vkUserId, string message)
 {
     Puts($"Message '{message}' was sent to VK User: {vkUserId}");
@@ -37,7 +42,8 @@ private void OnVkMessageSent(string vkUserId, string message)
 ```
 
 ### OnVkError
-```c#
+
+```csharp
 private void OnVkError(byte code, string description, int vkApiCode, string vkUserId)
 {
     Puts($"Api error code: {vkApiCode}; Description: '{description}'; User: {vkUserId}");
@@ -50,20 +56,25 @@ private void OnVkError(byte code, string description)
 ```
 
 ### OnVkConnected
-```c#
+
+```csharp
 private void OnVkConnected()
 {
     Puts("VK Api connected!");
 }
 ```
+
 ## OMG! Errors
+
 ### Invalid community token
+
 On start, plugin testing connection to VK. And if you have this long red message in console, that mean you have to check token value.
 ```
 [VkComponent] vkUserId: -; Error '5': User authorization failed: invalid access_token (4).
 ```
 
 ### User doesn't allow messages
+
 Don't worry if you have these yellow warnings about messages without some permissions, that mean recipient doesn't allow messages from community.  
 If you don't like these messages, you can turn of them in plugin configuration. Btw you can always handle these errors by **OnVkError** hook with code **4**
 ```
@@ -71,6 +82,7 @@ If you don't like these messages, you can turn of them in plugin configuration. 
 ```
 
 ### OnVkError(byte code, ...)
+
 Code values: 
 1. Network problems
 2. Token wasn't specified
@@ -78,6 +90,7 @@ Code values:
 4. User doesn't allow messages
 
 ## Examples
+
 Example [plugin on git](https://github.com/rust-plugins/VkApi/blob/master/Examples/VkApiExample.cs) with console command "**vk**" to test messages.
 ```
 > vk 000000 "Hello, Universe!"
@@ -85,11 +98,12 @@ Example [plugin on git](https://github.com/rust-plugins/VkApi/blob/master/Exampl
 [VK API Example] Message 'Hello, Universe!' was sent to VK User: 000000
 ```
 
-### Use it in your super plugin
+### Usage
+
 Two simple steps:  Add plugin reference as usual
-```c#
+```csharp
 [PluginReference]
-Plugin VkApi;
+private Plugin VkApi;
 
 private void Loaded()
 {
@@ -101,7 +115,7 @@ private void Loaded()
 ```
 
 And send messages when you want
-```c#
+```csharp
 private void MyAwesomeMethod()
 {
     var vkUserId = "000000";
